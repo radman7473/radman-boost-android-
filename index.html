@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071221">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RADMAN BOOST">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+<title>RADMAN BOOST</title>
+<style>
+html,body{margin:0;width:100%;height:100%;background:#071221;color:white;font-family:system-ui;overflow:hidden}
+#load{position:fixed;inset:0;display:grid;place-items:center;text-align:center;background:radial-gradient(circle at center,#102947,#071221 65%)}
+.logo{font-weight:950;letter-spacing:.14em;font-size:clamp(28px,8vw,70px)} .sub{opacity:.65;margin-top:12px;font-size:13px}
+.bar{width:min(320px,70vw);height:7px;background:#ffffff1a;border-radius:99px;overflow:hidden;margin:20px auto 0}
+.fill{height:100%;width:25%;background:#fff;border-radius:99px;animation:a 1.1s ease-in-out infinite alternate}@keyframes a{to{transform:translateX(300%)}}
+</style>
+</head>
+<body>
+<div id="load"><div><div class="logo">RADMAN BOOST</div><div class="sub">Loading game…</div><div class="bar"><div class="fill"></div></div></div></div>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(console.error);
+}
+(async()=>{
+ try{
+  const files=['./game_payload/part-00.txt','./game_payload/part-01.txt','./game_payload/part-02.txt','./game_payload/part-03.txt','./game_payload/part-04.txt','./game_payload/part-05.txt','./game_payload/part-06.txt','./game_payload/part-07.txt','./game_payload/part-08.txt','./game_payload/part-09.txt','./game_payload/part-10.txt','./game_payload/part-11.txt','./game_payload/part-12.txt'];
+  const parts=await Promise.all(files.map(u=>fetch(u,{cache:'force-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text()})));
+  const b64=parts.join('').replace(/\s+/g,'');
+  const bin=atob(b64); const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  const ds=new DecompressionStream('gzip');
+  const html=await new Response(new Blob([bytes]).stream().pipeThrough(ds)).text();
+  document.open(); document.write(html); document.close();
+ }catch(e){
+  document.getElementById('load').innerHTML='<div><div class="logo">RADMAN BOOST</div><p>Could not load the game.</p><button onclick="location.reload()">Retry</button></div>';
+  console.error(e);
+ }
+})();
+</script>
+</body></html>
